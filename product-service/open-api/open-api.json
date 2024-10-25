@@ -1,0 +1,118 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Products Http Api 3.0",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://ztdr7sralb.execute-api.eu-west-1.amazonaws.com/{basePath}",
+      "variables": {
+        "basePath": {
+          "default": ""
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Product"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{productId}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Product"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "productId",
+          "in": "path",
+          "description": "Generated path parameter for productId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "Product": {
+        "required": [
+          "id",
+          "title",
+          "price",
+          "description",
+          "stock"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "7567ec4b-b10c-48c5-9345-fc73c48a80aa"
+          },
+          "price": {
+            "type": "number",
+            "example": 1200
+          },
+          "description": {
+            "type": "string",
+            "example": "13-inch ultrabook with Intel i7, 16GB RAM, and 512GB SSD."
+          },
+          "title": {
+            "type": "string",
+            "example": "Dell XPS 13"
+          },
+          "stock": {
+            "type": "number",
+            "example": 10
+          }
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-cors": {
+    "allowMethods": [
+      "*"
+    ],
+    "allowHeaders": [
+      "*"
+    ],
+    "maxAge": -42,
+    "allowCredentials": false,
+    "allowOrigins": [
+      "*"
+    ]
+  },
+  "x-amazon-apigateway-importexport-version": "1.0"
+}
