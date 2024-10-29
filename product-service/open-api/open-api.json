@@ -68,13 +68,7 @@
   "components": {
     "schemas": {
       "Product": {
-        "required": [
-          "id",
-          "title",
-          "price",
-          "description",
-          "stock"
-        ],
+        "required": ["id", "title", "price", "description", "stock"],
         "type": "object",
         "properties": {
           "id": {
@@ -102,17 +96,11 @@
     }
   },
   "x-amazon-apigateway-cors": {
-    "allowMethods": [
-      "*"
-    ],
-    "allowHeaders": [
-      "*"
-    ],
+    "allowMethods": ["*"],
+    "allowHeaders": ["*"],
     "maxAge": -42,
     "allowCredentials": false,
-    "allowOrigins": [
-      "*"
-    ]
+    "allowOrigins": ["*"]
   },
   "x-amazon-apigateway-importexport-version": "1.0"
 }

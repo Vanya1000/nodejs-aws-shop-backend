@@ -1,6 +1,8 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
-export const createApiGatewayEvent = (pathParameters: { [key: string]: string } | null = null): APIGatewayProxyEvent => ({
+export const createApiGatewayEvent = (
+  pathParameters: { [key: string]: string } | null = null
+): APIGatewayProxyEvent => ({
   body: null,
   headers: {},
   multiValueHeaders: {},

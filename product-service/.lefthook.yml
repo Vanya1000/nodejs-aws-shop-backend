@@ -1,0 +1,9 @@
+pre-commit:
+  commands:
+    lint:
+      run: npm run lint
+      parallel: true
+    prettier:
+      run: npm run format -- --check
+      parallel: true
+  piped: false

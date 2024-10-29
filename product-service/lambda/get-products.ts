@@ -49,7 +49,7 @@ export const handler = async (
     const mergedProducts = mergeProductsAndStocks(products, stocks);
 
     return successResponse(mergedProducts);
-  } catch {
+  } catch (error) {
     return errorResponse(500, 'Internal Server Error');
   }
 };
