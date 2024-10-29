@@ -1,5 +1,5 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { handler } from '../lambda/get-product-by-id'
+import { handler } from '../lambda/get-product-by-id';
 import { createApiGatewayEvent } from './utils';
 import { products } from '../mocks/products';
 
@@ -11,7 +11,7 @@ describe('Lambda Function Handler get-product-by-id', () => {
 
     const result: APIGatewayProxyResult = await handler(event);
 
-    const expectedProduct = products.find(p => p.id === productId);
+    const expectedProduct = products.find((p) => p.id === productId);
 
     expect(result.statusCode).toBe(200);
     expect(result.body).toBe(JSON.stringify(expectedProduct));
