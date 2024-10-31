@@ -1,5 +1,5 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { handler } from '../lambda/get-products'
+import { APIGatewayProxyResult } from 'aws-lambda';
+import { handler } from '../lambda/get-products';
 import { products } from '../mocks/products';
 import { createApiGatewayEvent } from './utils';
 

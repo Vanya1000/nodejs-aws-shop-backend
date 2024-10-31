@@ -4,6 +4,8 @@ import openApiSpec from '../open-api/open-api.json';
 export const handler = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
+  console.log('Received event:', JSON.stringify(event, null, 2));
+
   const openApiJsonString = JSON.stringify(openApiSpec);
 
   const html = `
