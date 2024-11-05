@@ -1,0 +1,125 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Import Service API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://your-api-endpoint.amazonaws.com/{basePath}",
+      "variables": {
+        "basePath": {
+          "default": ""
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/import": {
+      "get": {
+        "summary": "Generate a pre-signed URL for file upload",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Name of the file to upload",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signed URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request: File name is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missingFileName": {
+                    "value": {
+                      "message": "File name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "internalServerError": {
+                    "value": {
+                      "message": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SignedUrlResponse": {
+        "type": "object",
+        "required": [
+          "signedUrl"
+        ],
+        "properties": {
+          "signedUrl": {
+            "type": "string",
+            "description": "Pre-signed URL for uploading the file",
+            "example": "https://bucket-name.s3.amazonaws.com/uploaded/filename?AWSAccessKeyId=AKIA..."
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message detailing the cause",
+            "example": "Error message detailing the cause"
+          }
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-cors": {
+    "allowMethods": [
+      "GET"
+    ],
+    "allowHeaders": [
+      "*"
+    ],
+    "maxAge": 0,
+    "allowCredentials": false,
+    "allowOrigins": [
+      "*"
+    ]
+  },
+  "x-amazon-apigateway-importexport-version": "1.0"
+}
