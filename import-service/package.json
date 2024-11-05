@@ -1,0 +1,47 @@
+{
+  "name": "import-service",
+  "version": "0.1.0",
+  "bin": {
+    "product-service": "bin/import-service.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "lint": "eslint",
+    "format": "prettier --check .",
+    "deploy:cdk": "npx cdk deploy --profile admin_aws_sso_profile_name",
+    "destroy:cdk": "npx cdk destroy --profile admin_aws_sso_profile_name"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/aws-lambda": "^8.10.145",
+    "@types/jest": "^29.5.12",
+    "@types/node": "22.5.4",
+    "aws-sdk-client-mock": "^4.1.0",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "globals": "^15.11.0",
+    "jest": "^29.7.0",
+    "prettier": "3.3.3",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.12.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.679.0",
+    "@aws-sdk/client-s3": "^3.682.0",
+    "@aws-sdk/lib-dynamodb": "^3.679.0",
+    "@aws-sdk/s3-request-presigner": "^3.682.0",
+    "aws-cdk-lib": "2.163.0",
+    "constructs": "^10.0.0",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.24.0",
+    "source-map-support": "^0.5.21",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  }
+}
