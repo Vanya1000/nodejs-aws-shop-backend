@@ -5,6 +5,10 @@ import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as apiGateway from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as event_sources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import { join } from 'path';
 import 'dotenv/config';
 
@@ -33,6 +37,16 @@ export class ProductServiceStack extends cdk.Stack {
       runtime: Runtime.NODEJS_20_X,
       functionName: 'post-product',
     });
+
+    const cataloBatchProcessLambda = new NodejsFunction(
+      this,
+      'CataloBatchProcessFunction',
+      {
+        entry: join(__dirname, '..', 'lambda', 'catalog-batch-process.ts'),
+        runtime: Runtime.NODEJS_20_X,
+        functionName: 'catalog-batch-process',
+      }
+    );
 
     const docsLambda = new NodejsFunction(this, 'DocsFunction', {
       entry: join(__dirname, '..', 'lambda', 'docs.ts'),
@@ -111,9 +125,57 @@ export class ProductServiceStack extends cdk.Stack {
     productsTable.grantReadWriteData(getProductsLambda);
     productsTable.grantReadWriteData(getProductByIdLambda);
     productsTable.grantReadWriteData(postProductLambda);
+    productsTable.grantReadWriteData(cataloBatchProcessLambda);
 
     stocksTable.grantReadWriteData(getProductsLambda);
     stocksTable.grantReadWriteData(getProductByIdLambda);
     stocksTable.grantReadWriteData(postProductLambda);
+    stocksTable.grantReadWriteData(cataloBatchProcessLambda);
+
+    const catalogItemsQueue = new sqs.Queue(this, 'CatalogItemsQueue');
+
+    cataloBatchProcessLambda.addEventSource(
+      new event_sources.SqsEventSource(catalogItemsQueue, {
+        batchSize: 5,
+      })
+    );
+
+    new cdk.CfnOutput(this, 'CatalogItemsQueueArn', {
+      value: catalogItemsQueue.queueArn,
+      exportName: 'CatalogItemsQueueArn',
+    });
+
+    const createProductTopic = new sns.Topic(this, 'CreateProductTopic', {
+      displayName: 'Create Product Topic',
+    });
+
+    cataloBatchProcessLambda.addEnvironment(
+      'TOPIC_ARN',
+      createProductTopic.topicArn
+    );
+    createProductTopic.grantPublish(cataloBatchProcessLambda);
+
+    const highPriceEmail = 'ivanzakharanka@gmail.com';
+    const mediumPriceEmail = 'vanya1000@yandex.by';
+
+    createProductTopic.addSubscription(
+      new subs.EmailSubscription(highPriceEmail, {
+        filterPolicy: {
+          price: sns.SubscriptionFilter.numericFilter({
+            greaterThan: 1000,
+          }),
+        },
+      })
+    );
+
+    createProductTopic.addSubscription(
+      new subs.EmailSubscription(mediumPriceEmail, {
+        filterPolicy: {
+          price: sns.SubscriptionFilter.numericFilter({
+            lessThan: 1000,
+          }),
+        },
+      })
+    );
   }
 }

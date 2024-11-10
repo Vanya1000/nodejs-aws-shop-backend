@@ -6,6 +6,7 @@ import * as apiGateway from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3notificaitions from 'aws-cdk-lib/aws-s3-notifications';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { join } from 'path';
 import 'dotenv/config';
 
@@ -101,6 +102,20 @@ export class ImportServiceStack extends cdk.Stack {
       s3.EventType.OBJECT_CREATED,
       new s3notificaitions.LambdaDestination(importFileParserLambda),
       { prefix: 'uploaded' }
+    );
+
+    const catalogItemsQueueArn = cdk.Fn.importValue('CatalogItemsQueueArn');
+    const catalogItemsQueue = sqs.Queue.fromQueueArn(
+      this,
+      'CatalogItemsQueueImported',
+      catalogItemsQueueArn
+    );
+
+    catalogItemsQueue.grantSendMessages(importFileParserLambda);
+
+    importFileParserLambda.addEnvironment(
+      'CATALOG_ITEMS_QUEUE_URL',
+      catalogItemsQueue.queueUrl
     );
   }
 }
