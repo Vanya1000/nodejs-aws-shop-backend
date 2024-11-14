@@ -1,9 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as apiGateway from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as authorizers from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3notificaitions from 'aws-cdk-lib/aws-s3-notifications';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -64,6 +65,26 @@ export class ImportServiceStack extends cdk.Stack {
       },
     });
 
+    const basicAuthorizerLambdaArn = cdk.Fn.importValue(
+      'BasicAuthorizerLambdaArn'
+    );
+
+    const basicAuthorizerLambda = Function.fromFunctionArn(
+      this,
+      'BasicAuthorizerLambda',
+      basicAuthorizerLambdaArn
+    );
+
+    const basicAuthorizer = new authorizers.HttpLambdaAuthorizer(
+      'BasicLambdaAuthorizer',
+      basicAuthorizerLambda,
+      {
+        identitySource: ['$request.header.Authorization'],
+        responseTypes: [authorizers.HttpLambdaResponseType.IAM],
+        resultsCacheTtl: cdk.Duration.seconds(0),
+      }
+    );
+
     httpApi.addRoutes({
       path: '/import',
       methods: [apiGateway.HttpMethod.GET],
@@ -71,6 +92,7 @@ export class ImportServiceStack extends cdk.Stack {
         'GetImportProductsFileIntegration',
         getImportProductsFileLambda
       ),
+      authorizer: basicAuthorizer,
     });
 
     httpApi.addRoutes({
