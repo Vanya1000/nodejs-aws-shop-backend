@@ -24,11 +24,11 @@ const ProductSchema = z.object({
 
 type ProductType = z.infer<typeof ProductSchema>;
 
-export const validateProduct = (product: string | null) => {
-  if (product === null) {
+export const validateProduct = (product: string | undefined) => {
+  if (product === undefined) {
     throw new Error(
       JSON.stringify({
-        message: 'Product cannot be null',
+        message: 'Product cannot be undefined',
       })
     );
   }

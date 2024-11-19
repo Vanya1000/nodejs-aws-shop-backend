@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyResult } from 'aws-lambda';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { errorResponse, successResponse } from '../utils';
@@ -37,7 +37,7 @@ const mergeProductsAndStocks = (products: any[], stocks: any[]): any[] => {
 };
 
 export const handler = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResult> => {
   console.log('Received event:', JSON.stringify(event, null, 2));
   try {
