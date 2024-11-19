@@ -22,6 +22,16 @@ export class ProductServiceStack extends cdk.Stack {
       functionName: 'get-products',
     });
 
+    const getProductsByIdsLambda = new NodejsFunction(
+      this,
+      'GetProductsByIdsFunction',
+      {
+        entry: join(__dirname, '..', 'lambda', 'get-products-by-ids.ts'),
+        runtime: Runtime.NODEJS_20_X,
+        functionName: 'get-products-by-ids',
+      }
+    );
+
     const getProductByIdLambda = new NodejsFunction(
       this,
       'GetProductByIdFunction',
@@ -74,6 +84,15 @@ export class ProductServiceStack extends cdk.Stack {
       integration: new integrations.HttpLambdaIntegration(
         'GetProductsIntegration',
         getProductsLambda
+      ),
+    });
+
+    httpApi.addRoutes({
+      path: '/products/batch',
+      methods: [apiGateway.HttpMethod.GET, apiGateway.HttpMethod.POST],
+      integration: new integrations.HttpLambdaIntegration(
+        'GetProductsByIdsIntegration',
+        getProductsByIdsLambda
       ),
     });
 
@@ -131,6 +150,9 @@ export class ProductServiceStack extends cdk.Stack {
     stocksTable.grantReadWriteData(getProductByIdLambda);
     stocksTable.grantReadWriteData(postProductLambda);
     stocksTable.grantReadWriteData(cataloBatchProcessLambda);
+
+    productsTable.grantReadData(getProductsByIdsLambda);
+    stocksTable.grantReadData(getProductsByIdsLambda);
 
     const catalogItemsQueue = new sqs.Queue(this, 'CatalogItemsQueue');
 
